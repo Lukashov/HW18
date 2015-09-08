@@ -16,7 +16,7 @@ import java.util.Locale;
  */
 public class DialogUtils {
 
-    private String myLocation;
+    private String mMyLocation;
 
     public void callShowMyLocationDialog(Context context, DialogFragment dialog, FragmentManager manager, double lat, double longt){
         Bundle bundle = new Bundle();
@@ -38,7 +38,7 @@ public class DialogUtils {
             String state = addresses.get(0).getAdminArea();
             String country = addresses.get(0).getCountryName();
 
-            myLocation =
+            mMyLocation =
                             "Country: "    + country     + "\n" +
                             "State: "      + state       + "\n" +
                             "City: "       + city        + "\n" +
@@ -47,7 +47,7 @@ public class DialogUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return myLocation;
+        return mMyLocation;
     }
 
 }
