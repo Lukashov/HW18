@@ -10,29 +10,22 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.location.Address;
 import android.location.Criteria;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.ThumbnailUtils;
-import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.den.hw18.callbacks.CallbackAddMarker;
 import com.example.den.hw18.dialogs.AddNewMarkerDialog;
 import com.example.den.hw18.dialogs.ShowMyLocationDialog;
 import com.example.den.hw18.utils.DialogUtils;
+import com.example.den.hw18.utils.MyLocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -42,10 +35,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
@@ -59,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements
     private Location location;
     public DialogFragment dialog;
     private LatLng latLng;
-
-    private String myLocation;
 
     private Bitmap bitmap;
     private List<Bitmap> bitmapList = new ArrayList<>();
@@ -91,11 +80,11 @@ public class MainActivity extends AppCompatActivity implements
         mMap.setOnMapClickListener(this);
         mMap.setOnMapLongClickListener(this);
 
-        mMap.setMyLocationEnabled(true);// marker of my location
+        mMap.setMyLocationEnabled(true);
 
-        mMap.getUiSettings().setZoomControlsEnabled(true);// zoom
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);// compass
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);//button for move to my location
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
         Location loc = mLocationManager.getLastKnownLocation(getBestProvider());
         if (loc != null) {
@@ -178,18 +167,16 @@ public class MainActivity extends AppCompatActivity implements
 
     private void placeMarker(LatLng latLng,String filePath, String txt){
 
-        // set for small marker
         radius = 50;
         int stroke = 3;
         verticalAnchor = 0.944f;
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap((int) radius, (int) radius + 25, conf);
+        Bitmap bmp = Bitmap.createBitmap(radius, radius + 25, conf);
         Canvas canvas = new Canvas(bmp);
         bitmap = BitmapFactory.decodeFile(filePath);
 
-        // creates a centered bitmap of the desired size
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, (int) radius - stroke, (int) radius - stroke, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, radius - stroke, radius - stroke, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
 
         bitmapList.add(bitmap);
@@ -199,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements
         paint.setColor(0xff464646);
         paint.setStyle(Paint.Style.FILL);
 
-        // the triangle laid under the circle
         int pointedness = 20;
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
@@ -208,16 +194,13 @@ public class MainActivity extends AppCompatActivity implements
         path.lineTo(radius / 2 - pointedness, radius - 10);
         canvas.drawPath(path, paint);
 
-        // gray circle background
         RectF rect = new RectF(0, 0, radius, radius);
         canvas.drawRoundRect(rect, radius / 2, radius / 2, paint);
 
-        // circle photo
         paint.setShader(shader);
         rect = new RectF(stroke, stroke, radius - stroke, radius - stroke);
         canvas.drawRoundRect(rect, (radius - stroke) / 2, (radius - stroke) / 2, paint);
 
-        // add the marker
         mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title( "\n" + "Latitude: " + latLng.latitude +
@@ -249,8 +232,6 @@ public class MainActivity extends AppCompatActivity implements
 
             TextView txtSnippet = ((TextView) mContentView.findViewById(R.id.snippet));
             txtSnippet.setText(marker.getSnippet());
-
-            int i = Integer.parseInt((new StringBuffer(marker.getId()).deleteCharAt(0).toString()));
 
             ImageView ivIcon = ((ImageView) mContentView.findViewById(R.id.icon));
             ivIcon.setImageBitmap(bitmapList.get(Integer.parseInt(

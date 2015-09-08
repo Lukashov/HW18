@@ -1,8 +1,10 @@
-package com.example.den.hw18;
+package com.example.den.hw18.utils;
 
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+
+import com.example.den.hw18.MainActivity;
 
 /**
  * Created by Den on 07.09.15.

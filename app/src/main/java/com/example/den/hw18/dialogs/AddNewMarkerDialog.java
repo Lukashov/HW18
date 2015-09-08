@@ -15,14 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.example.den.hw18.CallbackAddMarker;
+import com.example.den.hw18.callbacks.CallbackAddMarker;
 import com.example.den.hw18.R;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by Den on 08.09.15.
@@ -36,8 +31,6 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
     private Button mBtnCancel;
 
     private String filePath;
-
-    private Bundle mBundle;
 
     private final int Pick_image = 1;
 
@@ -119,25 +112,20 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == Pick_image && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             final Uri imageUri = data.getData();
-            String path = imageUri.getPath();
 
-            File file = new File(path);
-            file.getAbsolutePath();
-
-//            String filePath;
             String[] filePathColumn = {MediaStore.MediaColumns.DATA};
 
-            Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(imageUri, filePathColumn, null, null, null);
+            Cursor cursor = getActivity()
+                    .getApplicationContext()
+                    .getContentResolver()
+                    .query(imageUri, filePathColumn, null, null, null);
             cursor.moveToFirst();
 
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             filePath = cursor.getString(columnIndex);
             cursor.close();
 
-
             mImageView.setImageURI(imageUri);
-//            mImageCard.setImageURI(imageUri);
-//            cf.getmContact().get(bundle.getInt("id")).setImage(imageUri.toString());
         }
     }
 
