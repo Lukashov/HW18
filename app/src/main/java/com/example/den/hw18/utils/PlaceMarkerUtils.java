@@ -22,7 +22,12 @@ import java.util.List;
  */
 public class PlaceMarkerUtils {
 
-    public void placeMarker(GoogleMap mMap, List<Bitmap> bitmapList, LatLng latLng, String filePath, String txt){
+    public void placeMarker(GoogleMap mMap,
+                            List<Bitmap> bitmapList,
+                            double latitude,
+                            double longitude,
+                            String txt,
+                            String filePath){
 
         int radius = 50;
         int stroke = 3;
@@ -64,14 +69,14 @@ public class PlaceMarkerUtils {
         rect = new RectF(stroke, stroke, radius - stroke, radius - stroke);
         canvas.drawRoundRect(rect, (radius - stroke) / 2, (radius - stroke) / 2, paint);
 
-        createMarker(mMap, latLng, txt, verticalAnchor, bmp);
+        createMarker(mMap, latitude, longitude, txt, verticalAnchor, bmp);
     }
 
-    private void createMarker(GoogleMap mMap, LatLng latLng, String txt, float verticalAnchor, Bitmap bmp) {
+    private void createMarker(GoogleMap mMap, double latitude, double longitude, String txt, float verticalAnchor, Bitmap bmp) {
         mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .title( "\n" + "Latitude: " + latLng.latitude +
-                        "\n" + "Longitude: " + latLng.longitude)
+                .position(new LatLng(latitude,longitude))
+                .title( "\n" + "Latitude: " + latitude +
+                        "\n" + "Longitude: " + longitude)
                 .snippet(txt)
                 .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                 .anchor(0.5f, verticalAnchor));

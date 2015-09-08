@@ -18,6 +18,7 @@ import android.widget.ImageView;
 
 import com.example.den.hw18.callbacks.CallbackAddMarker;
 import com.example.den.hw18.R;
+import com.example.den.hw18.db.DataBaseHelper;
 
 /**
  * Created by Den on 08.09.15.
@@ -91,12 +92,9 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnDone:
-                //add text, coordinates and photo to DB and marker
                 mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), mFilePath);
-
                 Log.d("LogCall: ","txt: "+ mEditTxt.getText()+" path: "+ mFilePath);
                 dismiss();
-
                 break;
             case R.id.btnCancel:
                 dismiss();
