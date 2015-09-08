@@ -8,12 +8,15 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import com.example.den.hw18.adapters.MyInfoWindowAdapter;
 import com.example.den.hw18.callbacks.CallbackAddMarker;
+import com.example.den.hw18.db.DataBaseHelper;
 import com.example.den.hw18.dialogs.AddNewMarkerDialog;
 import com.example.den.hw18.dialogs.ShowMyLocationDialog;
+import com.example.den.hw18.models.MarkersModel;
 import com.example.den.hw18.utils.DialogUtils;
 import com.example.den.hw18.utils.MyLocationListener;
 import com.example.den.hw18.utils.PlaceMarkerUtils;
@@ -38,12 +41,20 @@ public class MainActivity extends AppCompatActivity implements
     private DialogFragment mDialog;
     private LatLng mLatLng;
 
-    private List<Bitmap> bitmapList = new ArrayList<>();
+    private List<Bitmap> mBitmapList = new ArrayList<>();
+
+    private PlaceMarkerUtils placeMarkerUtils = new PlaceMarkerUtils();
+
+    private DataBaseHelper mDataBaseHelper;
+
+    private List<MarkersModel> markersModelList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDataBaseHelper = new DataBaseHelper(this);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -64,7 +75,9 @@ public class MainActivity extends AppCompatActivity implements
 
         moveToMyLocation();
 
-        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(getLayoutInflater(), bitmapList));
+        loadMarkersToMap();
+
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter(getLayoutInflater(), mBitmapList));
 
         mapListeners();
     }
@@ -91,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements
 
                 break;
         }
-
     }
 
     @Override
@@ -108,8 +120,17 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void addMarker(String txt, String path) {
-        PlaceMarkerUtils placeMarkerUtils = new PlaceMarkerUtils();
-        placeMarkerUtils.placeMarker(mMap, bitmapList, mLatLng, path, txt);
+        placeMarkerUtils.placeMarker(mMap,
+                                     mBitmapList,
+                                     mLatLng.latitude,
+                                     mLatLng.longitude,
+                                     txt,
+                                     path);
+
+        mDataBaseHelper.addNewMarker("" + mLatLng.latitude,
+                                     "" + mLatLng.longitude,
+                                     txt,
+                                     path);
     }
 
     @Override
@@ -132,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements
         criteria.setCostAllowed(false);
 
         return mLocationManager.getBestProvider(criteria, true);
-
     }
 
     private void mapSettings() {
@@ -156,4 +176,21 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void loadMarkersToMap() {
+        markersModelList = mDataBaseHelper.getAllMarkers();
+
+        if(markersModelList.size()>0) {
+            for (int i = 0; i < markersModelList.size(); i++) {
+                placeMarkerUtils.placeMarker(mMap,
+                        mBitmapList,
+                        Double.parseDouble(markersModelList.get(i).getLatitude()),
+                        Double.parseDouble(markersModelList.get(i).getLongitude()),
+                        markersModelList.get(i).getText(),
+                        markersModelList.get(i).getFilePath());
+
+                Log.d("LogDB: ", "\n lat: " + (markersModelList.get(i).getLatitude()) + "\n" +
+                        "lng: " + (markersModelList.get(i).getLongitude()));
+            }
+        }
+    }
 }
