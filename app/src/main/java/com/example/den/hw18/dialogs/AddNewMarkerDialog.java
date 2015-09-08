@@ -30,7 +30,7 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
     private Button mBtnDone;
     private Button mBtnCancel;
 
-    private String filePath;
+    private String mFilePath;
 
     private final int Pick_image = 1;
 
@@ -60,18 +60,24 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
 
         getDialog().setTitle("Add new marker:");
 
-        mImageView = (ImageView) view.findViewById(R.id.imgView);
+        findViews(view);
 
-        mEditTxt = (EditText) view.findViewById(R.id.editTxt);
+        veiwListeners();
 
-        mBtnDone = (Button) view.findViewById(R.id.btnDone);
-        mBtnCancel = (Button) view.findViewById(R.id.btnCancel);
+        return view;
+    }
 
+    private void veiwListeners() {
         mBtnDone.setOnClickListener(this);
         mBtnCancel.setOnClickListener(this);
         mImageView.setOnClickListener(this);
+    }
 
-        return view;
+    private void findViews(View view) {
+        mImageView = (ImageView) view.findViewById(R.id.imgView);
+        mEditTxt = (EditText) view.findViewById(R.id.editTxt);
+        mBtnDone = (Button) view.findViewById(R.id.btnDone);
+        mBtnCancel = (Button) view.findViewById(R.id.btnCancel);
     }
 
     @Override
@@ -86,9 +92,9 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
         switch (v.getId()) {
             case R.id.btnDone:
                 //add text, coordinates and photo to DB and marker
-                mCallbackAddMarker.addMarker(mEditTxt.getText().toString(),filePath);
+                mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), mFilePath);
 
-                Log.d("LogCall: ","txt: "+ mEditTxt.getText()+" path: "+ filePath);
+                Log.d("LogCall: ","txt: "+ mEditTxt.getText()+" path: "+ mFilePath);
                 dismiss();
 
                 break;
@@ -122,7 +128,7 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
             cursor.moveToFirst();
 
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            filePath = cursor.getString(columnIndex);
+            mFilePath = cursor.getString(columnIndex);
             cursor.close();
 
             mImageView.setImageURI(imageUri);
