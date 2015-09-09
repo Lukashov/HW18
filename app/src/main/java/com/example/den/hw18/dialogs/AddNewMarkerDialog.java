@@ -97,7 +97,7 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
         switch (v.getId()) {
             case R.id.btnDone:
                 if(mFilePath == null){
-                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), "file:///android_res/drawable/non_image.png");
+                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), "file:///android_res/drawable/add_new_image.png");
                     Log.d("LogCall: ","txt1: "+ mEditTxt.getText()+" path: "+ "file:///android_res/drawable/non_image.png");
 
                 }else if(mFilePath !=null) {
