@@ -3,12 +3,9 @@ package com.example.den.hw18.dialogs;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +15,6 @@ import android.widget.ImageView;
 
 import com.example.den.hw18.callbacks.CallbackAddMarker;
 import com.example.den.hw18.R;
-import com.example.den.hw18.db.DataBaseHelper;
-
-import java.net.URI;
 
 /**
  * Created by Den on 08.09.15.
@@ -32,8 +26,6 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
 
     private Button mBtnDone;
     private Button mBtnCancel;
-
-    private String mFilePath;
 
     private final int Pick_image = 1;
 
@@ -64,6 +56,7 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
         View view = inflater.inflate(R.layout.dialog_add_new_marker, container);
 
         getDialog().setTitle("Add new marker:");
+        getDialog().setCancelable(false);
 
         findViews(view);
 
@@ -96,14 +89,11 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnDone:
-                if(mFilePath == null){
-                    Uri path = Uri.parse("android.resource://com.example.den.hw18/" + R.drawable.non_image);
-                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), getAbsolutePath(path));
-                    Log.d("LogCall: ","txt1: "+ mEditTxt.getText()+" path: "+ path);
-                }else if(mFilePath !=null) {
-                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), mFilePath);
-                    Log.d("LogCall: ","txt2: "+ mEditTxt.getText()+" path: "+ mFilePath);
-
+                if(imageUri != null) {
+                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), imageUri);
+                }else{
+                    Uri uri = Uri.parse("android.resource://com.example.den.hw18/" + R.drawable.non_image);
+                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), uri);
                 }
                 dismiss();
                 break;
@@ -127,28 +117,7 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == Pick_image && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-
-                getAbsolutePath(imageUri);
-
             mImageView.setImageURI(imageUri);
         }
     }
-
-    private String getAbsolutePath(Uri imageUri) {
-        String[] filePathColumn = {MediaStore.MediaColumns.DATA};
-
-        Cursor cursor = getActivity()
-                .getApplicationContext()
-                .getContentResolver()
-                .query(imageUri, filePathColumn, null, null, null);
-
-        cursor.moveToFirst();
-
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        mFilePath = cursor.getString(columnIndex);
-        cursor.close();
-
-        return mFilePath;
-    }
-
 }

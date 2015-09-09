@@ -1,7 +1,7 @@
 package com.example.den.hw18.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -9,25 +9,29 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.media.ThumbnailUtils;
-
+import android.net.Uri;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.List;
+
+import static android.provider.MediaStore.Images.Media.getBitmap;
 
 /**
  * Created by Den on 08.09.15.
  */
 public class PlaceMarkerUtils {
 
-    public void placeMarker(GoogleMap mMap,
+    public void placeMarker(Context context,
+                            GoogleMap mMap,
                             List<Bitmap> bitmapList,
                             double latitude,
                             double longitude,
                             String txt,
-                            String filePath){
+                            Uri uri){
 
         int radius = 50;
         int stroke = 3;
@@ -36,7 +40,16 @@ public class PlaceMarkerUtils {
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(radius, radius + 25, conf);
         Canvas canvas = new Canvas(bmp);
-        Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+
+        Bitmap bitmap = null;
+
+            try {
+                bitmap = getBitmap(context.getContentResolver(), uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        bitmapList.add(bitmap);
 
         bitmap = ThumbnailUtils.extractThumbnail(bitmap,
                 radius - stroke,
@@ -46,8 +59,6 @@ public class PlaceMarkerUtils {
         BitmapShader shader = new BitmapShader(bitmap,
                 Shader.TileMode.CLAMP,
                 Shader.TileMode.CLAMP);
-
-        bitmapList.add(bitmap);
 
         Paint paint = new Paint();
         paint.setAntiAlias(true);

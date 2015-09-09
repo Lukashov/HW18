@@ -1,5 +1,7 @@
 package com.example.den.hw18.models;
 
+import android.net.Uri;
+
 /**
  * Created by Den on 08.09.15.
  */
@@ -8,24 +10,9 @@ public class MarkersModel {
     private String latitude;
     private String longitude;
     private String text;
-    private String filePath;
+    private Uri uri;
 
     public MarkersModel() {
-    }
-
-    public MarkersModel(String latitude, String longitude, String text, String filePath) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.text = text;
-        this.filePath = filePath;
-    }
-
-    public MarkersModel(String id, String latitude, String longitude, String text, String filePath) {
-        this._id = id;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.text = text;
-        this.filePath = filePath;
     }
 
     public String getId() {
@@ -44,8 +31,8 @@ public class MarkersModel {
         return text;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public Uri getUri() {
+        return uri;
     }
 
     public void setId(String id) {
@@ -64,7 +51,7 @@ public class MarkersModel {
         this.text = text;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setUri(Uri uri) {
+        this.uri = uri;
     }
 }

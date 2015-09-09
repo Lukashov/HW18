@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -119,18 +120,19 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void addMarker(String txt, String path) {
-        placeMarkerUtils.placeMarker(mMap,
+    public void addMarker(String txt, Uri uri) {
+        placeMarkerUtils.placeMarker(this,
+                                     mMap,
                                      mBitmapList,
                                      mLatLng.latitude,
                                      mLatLng.longitude,
                                      txt,
-                                     path);
+                                     uri);
 
         mDataBaseHelper.addNewMarker("" + mLatLng.latitude,
                                      "" + mLatLng.longitude,
                                      txt,
-                                     path);
+                                     uri);
     }
 
     @Override
@@ -181,12 +183,13 @@ public class MainActivity extends AppCompatActivity implements
 
         if(markersModelList.size()>0) {
             for (int i = 0; i < markersModelList.size(); i++) {
-                placeMarkerUtils.placeMarker(mMap,
+                placeMarkerUtils.placeMarker(this,
+                        mMap,
                         mBitmapList,
                         Double.parseDouble(markersModelList.get(i).getLatitude()),
                         Double.parseDouble(markersModelList.get(i).getLongitude()),
                         markersModelList.get(i).getText(),
-                        markersModelList.get(i).getFilePath());
+                        markersModelList.get(i).getUri());
 
                 Log.d("LogDB: ", "\n lat: " + (markersModelList.get(i).getLatitude()) + "\n" +
                         "lng: " + (markersModelList.get(i).getLongitude()));
