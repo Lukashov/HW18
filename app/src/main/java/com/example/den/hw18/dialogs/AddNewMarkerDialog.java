@@ -20,6 +20,8 @@ import com.example.den.hw18.callbacks.CallbackAddMarker;
 import com.example.den.hw18.R;
 import com.example.den.hw18.db.DataBaseHelper;
 
+import java.net.URI;
+
 /**
  * Created by Den on 08.09.15.
  */
@@ -34,6 +36,8 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
     private String mFilePath;
 
     private final int Pick_image = 1;
+
+    Uri imageUri;
 
     private CallbackAddMarker mCallbackAddMarker;
 
@@ -92,8 +96,15 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnDone:
-                mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), mFilePath);
-                Log.d("LogCall: ","txt: "+ mEditTxt.getText()+" path: "+ mFilePath);
+                if(mFilePath == null){
+                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), "file:///android_res/drawable/non_image.png");
+                    Log.d("LogCall: ","txt1: "+ mEditTxt.getText()+" path: "+ "file:///android_res/drawable/non_image.png");
+
+                }else if(mFilePath !=null) {
+                    mCallbackAddMarker.addMarker(mEditTxt.getText().toString(), mFilePath);
+                    Log.d("LogCall: ","txt2: "+ mEditTxt.getText()+" path: "+ getAbsolutePath(imageUri));
+
+                }
                 dismiss();
                 break;
             case R.id.btnCancel:
@@ -115,22 +126,29 @@ public class AddNewMarkerDialog extends DialogFragment implements View.OnClickLi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == Pick_image && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-            final Uri imageUri = data.getData();
+            imageUri = data.getData();
 
-            String[] filePathColumn = {MediaStore.MediaColumns.DATA};
-
-            Cursor cursor = getActivity()
-                    .getApplicationContext()
-                    .getContentResolver()
-                    .query(imageUri, filePathColumn, null, null, null);
-            cursor.moveToFirst();
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            mFilePath = cursor.getString(columnIndex);
-            cursor.close();
+                getAbsolutePath(imageUri);
 
             mImageView.setImageURI(imageUri);
         }
+    }
+
+    private String getAbsolutePath(Uri imageUri) {
+        String[] filePathColumn = {MediaStore.MediaColumns.DATA};
+
+        Cursor cursor = getActivity()
+                .getApplicationContext()
+                .getContentResolver()
+                .query(imageUri, filePathColumn, null, null, null);
+
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        mFilePath = cursor.getString(columnIndex);
+        cursor.close();
+
+        return mFilePath;
     }
 
 }
