@@ -49,12 +49,12 @@ public class PlaceMarkerUtils {
                 e.printStackTrace();
             }
 
-        bitmapList.add(bitmap);
-
         bitmap = ThumbnailUtils.extractThumbnail(bitmap,
                 radius - stroke,
                 radius - stroke,
                 ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+
+        bitmapList.add(bitmap);
 
         BitmapShader shader = new BitmapShader(bitmap,
                 Shader.TileMode.CLAMP,

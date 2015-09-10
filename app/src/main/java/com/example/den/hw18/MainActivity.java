@@ -161,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
         mMap.setMyLocationEnabled(true);
     }
 
